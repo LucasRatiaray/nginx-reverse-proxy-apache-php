@@ -1,57 +1,53 @@
 version: '3'
 services:
   #||---------------------------------||
-  #|| CONTAINER FOR lucasratiaray.fr  ||
+  #|| CONTAINER example               ||
   #||---------------------------------||
   # lucasratiaray-portfolio:
-  #   container_name: portfolio_lucasratiaray
-  #   image: node:lts-alpine
-  #   working_dir: /app
+  #   container_name: {name}
+  #   image: {image}
   #   expose:
-  #     - "8000"
-  #   environment:
-  #     - HOST=lucasratiaray-portfolio
-  #     - PORT=8000
-  #   command: sh -c "npm install && npm run build && node ./dist/server/entry.mjs"
+  #     - "{port}"
   #   volumes:
-  #     - ./www/lucasratiaray.fr:/app
+  #     - {volume1}
+  #     - {volume2}
+  #     - {volume3...}
   #   networks:
-  #     - backend
+  #     - {network}
 
   #||-----------------------------------||
-  #|| EXAMPLE OF PHP-APACHE CONTAINER   ||
+  #|| EXAMPLE FOR Block 1               ||
   #||-----------------------------------||
   php-apache:
-    container_name: php_apache
-    build: site
+    container_name: {name}
+    build: site #if dockerfile exist
     expose:
-      - "8000"
+      - "8000" #default
     volumes:
-      - ./maintenance:/var/www/html/
+      - ./www/site1:/var/www/html/
       - ./server/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - ./server/apache2.conf:/etc/apache2/apache2.conf
       - ./server/php.ini:/usr/local/etc/php/php.ini
       - ./server/ports.conf:/etc/apache2/ports.conf
     networks:
-      - backend
+      - backend #example of network
 
   #||-----------------------------------||
-  #|| CONTAINER FOR rebellab.tech       ||
+  #|| CONTAINER FOR Block 2             ||
   #||-----------------------------------||
-  php-apache-rebellab:
-    container_name: php_apache_rebellab
-    build: site
+  php-apache:
+    container_name: {name}
+    build: site #if dockerfile exist
     expose:
-      - "8001"
+      - "8000" #default
     volumes:
-    # - ./www/rebellab.tech:/var/www/html/ # For production
-      - ./maintenance:/var/www/html/
+      - ./www/site2:/var/www/html/
       - ./server/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - ./server/apache2.conf:/etc/apache2/apache2.conf
       - ./server/php.ini:/usr/local/etc/php/php.ini
       - ./server/ports.conf:/etc/apache2/ports.conf
     networks:
-      - backend
+      - backend #example of network
 
   #||-----------------------------------||
   #|| CONTAINER FOR NGINX REVERSE PROXY ||
@@ -64,9 +60,9 @@ services:
         - "80:80"
         - "443:443"
     depends_on:
-      # - lucasratiaray-portfolio # For production on lucasratiaray-portfolio
-      - php-apache
-      - php-apache-rebellab
+    # - {container-name}
+    # - {container-name}
+    # ex:  - php-apache
     volumes:
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         - ./certbot/conf:/etc/letsencrypt
@@ -83,7 +79,7 @@ services:
     volumes: 
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email contact.ratiaray@gmail.com -d lucasratiaray.fr -d rebellab.tech --agree-tos
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email {email} -d {mydomain1.com} -d {mydomain2.com} --agree-tos
     networks:
       - backend
 
